@@ -10,8 +10,7 @@
 
 It is possible to perform a simple single point energy calculation or geometry optimization from the GUI using various levels of theory. 
 These are the only two types of calculations currently available from the GUI. However a user defined GAMESS input file can be used by selecting “use input file instead”. 
-You may have to change insert_index_eng = 6 on line 160 depending on how many input groups the input file has. 
-This number will be where the geometry is added to the input file. I plan to fix this in future versions. 
+The code will add the SAMSON geometry to the GAMESS just above the $END keyword
 
 5. Input and output files are created in the GAMESS directory along with a log that may contain any errors.
 
