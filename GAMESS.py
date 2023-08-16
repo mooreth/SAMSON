@@ -112,7 +112,7 @@ class RunGAMESS(QDialog):
         # connect signals to slot
         
         self.button.clicked.connect(self.runCalculation)
-        self.btnInput.clicked.connect(self.getfile)  
+        self.btnInput.clicked.connect(self.getfile)  #I don't think I need this?
         
         self.usesymBox.stateChanged.connect(self.toggleGroupLine)
         
@@ -157,7 +157,23 @@ class RunGAMESS(QDialog):
         #origin flags is the calculation is being run from a already exisiting input file (=1) for from UI settings (2) BS Alters the filepath and filenames accourdingly
         #I'm sure this is a sloppy way to do this.
       
-        insert_index_eng = 6 
+        if origin == 1:
+            file = open(filename_X, 'r') #tryng name
+            igot = file.readlines()
+            log = open("C:\\Users\\Public\\gamess-64\\SAMSON_log.txt", "a")
+            for count, line in enumerate(igot):
+                try:
+                    if line in ["$END"]:
+                        insert_val = count-1
+                    else:
+                        insert_val = 6                        
+                except:
+                    
+                    logging.exception("An error occurred")
+        else:
+            insert_val = 6
+        
+        insert_index_eng = insert_val ######if origin is one we should check what the insert_index needs to be ortherwise =6
         indexer = SAMSON.getNodes('n.t a')                # returns all atom nodes
         #print(indexer.size)                               # returns size of the indexer
                 
@@ -173,6 +189,7 @@ class RunGAMESS(QDialog):
             input_line = Atom_type + "      "+ str(proton_number) + "      " +  str(round(Atom_x,3)) + "      "+ str(round(Atom_y,3)) + "      "+ str(round(Atom_z,3)) + " !"  + "\n"
 
             if origin == 2:
+                insert_index_eng = 6
             
                 with open(filepath_X + filename_X, "r") as f: 
                                                                 contents = f.readlines()
@@ -184,12 +201,12 @@ class RunGAMESS(QDialog):
                                                                 f.write(contents)  
             
             else:
-                with open(filename_X, "r") as f: 
+                with open(filepath_X, "r") as f: 
                                                                 contents = f.readlines()
     
                                                                 contents.insert(insert_index_eng, input_line)
     
-                with open(filename_X, "w") as f:
+                with open(filepath_X, "w") as f:
                                                                 contents = "".join(contents) 
                                                                 f.write(contents)                  
                 
