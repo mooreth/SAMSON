@@ -16,15 +16,11 @@ logging.basicConfig(filename="C:\\Users\\Public\\gamess-64\\SAMSON_log.txt", lev
 from ctypes import alignment
 from turtle import right
 from qtpy.QtCore import QFileInfo
-from PyQt5.QtWidgets import QPushButton, QLabel, QDoubleSpinBox, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QDialog, QFileDialog, QLineEdit
-from PyQt5.QtCore import Qt
+from qtpy.QtWidgets import QPushButton, QLabel, QDoubleSpinBox, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QDialog, QFileDialog, QLineEdit
+from qtpy.QtCore import Qt
 
-import samson as sam
-from samson.Facade import SAMSON        # SAMSON Facade - main interface of SAMSON
-from samson.DataModel import Quantity   # Quantities: length, mass, time, etc
-from samson.DataModel import Type       # Types: position3, etc
-from samson.DataModel.DataGraph import Node
-from samson.Modeling.StructuralModel import Atom
+# import the SAMSON package
+from samson import *
 
 class RunGAMESS(QDialog):
 
@@ -186,7 +182,7 @@ class RunGAMESS(QDialog):
             Atom_type = myAtom.elementSymbol
             proton_number = int(myAtom.elementType)
             
-            input_line = Atom_type + "      "+ str(proton_number) + "      " +  str(round(Atom_x,3)) + "      "+ str(round(Atom_y,3)) + "      "+ str(round(Atom_z,3)) + " !"  + "\n"
+            input_line = Atom_type + "      "+ str(proton_number) + "      " +  str(round(Atom_x.value,3)) + "      "+ str(round(Atom_y.value,3)) + "      "+ str(round(Atom_z.value,3)) + " !"  + "\n"
 
             if origin == 2:
                 insert_index_eng = 6
@@ -213,14 +209,12 @@ class RunGAMESS(QDialog):
 
        
     def runCalculation(self):
-        SAMSON.beginHolding("Calculate")
         
         #Let's first check if there is a GAMESS output file in the directory alreadt, and if there is we will rename it so it doesn't get over written
         self.output_check()
         
-     
-        try:        
-        
+        try:
+            SAMSON.beginHolding("Calculate")
             if self.useInputFile.isChecked():
                 
                 try:
@@ -321,7 +315,7 @@ class RunGAMESS(QDialog):
                     
                 
                 self.importOptGeo()  
-                SAMSON.endHolding()
+            SAMSON.endHolding()
         except Exception:
                     
                     traceback.print_exc(file=log)
@@ -403,7 +397,7 @@ class RunGAMESS(QDialog):
             y_cor = float((atom_geometries_in[Y_index]))
             z_cor = float((atom_geometries_in[Z_index])) 
         
-            position = Type.position3(Quantity.angstrom(x_cor), Quantity.angstrom(y_cor), Quantity.angstrom(z_cor))
+            position = SBPosition3(SBQuantity.angstrom(x_cor), SBQuantity.angstrom(y_cor), SBQuantity.angstrom(z_cor))
             positions.append(position)                                                  
         
             myAtom = indexer[atom]
